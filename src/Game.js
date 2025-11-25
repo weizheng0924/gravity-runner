@@ -2,6 +2,7 @@ import { Player } from './Player.js';
 import { ObstacleManager } from './ObstacleManager.js';
 import { Input } from './Input.js';
 import { FirebaseLeaderboard } from './FirebaseLeaderboard.js';
+import { Particle } from './Particle.js';
 import { CollectibleManager } from './CollectibleManager.js';
 
 export class Game {
@@ -29,6 +30,7 @@ export class Game {
         this.collidedObstacles = new Set(); // Track obstacles we've collided with
         this.gameStartTime = 0; // Track when game started
         this.gameDuration = 0; // Track total game time
+        this.particles = []; // Particle system
 
         this.ui = {
             score: document.getElementById('score'),
@@ -146,6 +148,7 @@ export class Game {
         this.collidedObstacles.clear();
         this.gameStartTime = Date.now(); // Record start time
         this.gameDuration = 0;
+        this.particles = []; // Clear particles on new game
         this.ui.startScreen.classList.add('hidden');
         this.ui.gameOverScreen.classList.add('hidden');
         this.lastTime = performance.now();
@@ -316,8 +319,16 @@ export class Game {
             this.score += 200; // Increased from 50 to 200
             this.combo++;
             this.comboDisplayTime = 1000; // Show combo for 1 second
+            // Spawn spark particles for coin collection
+            for (let i = 0; i < 8; i++) {
+                this.particles.push(new Particle(this.player.x + this.player.size / 2, this.player.y + this.player.size / 2, 'rgba(255,215,0,0.8)'));
+            }
         } else if (collected === 'shield' && this.shield < 1) {
             this.shield = 1;
+            // Spawn a blue burst for shield pickup
+            for (let i = 0; i < 6; i++) {
+                this.particles.push(new Particle(this.player.x + this.player.size / 2, this.player.y + this.player.size / 2, 'rgba(0,255,255,0.8)'));
+            }
         }
 
         // Track combo from dodging obstacles
@@ -339,6 +350,10 @@ export class Game {
             this.invincibilityTime -= deltaTime;
         }
 
+        // Update and clean up particles
+        this.particles.forEach(p => p.update());
+        this.particles = this.particles.filter(p => p.life > 0);
+
         // Check collisions
         const collidedObstacle = this.obstacleManager.checkCollision(this.player);
         if (collidedObstacle) {
@@ -350,8 +365,16 @@ export class Game {
                     // Use shield - can pass through
                     this.shield = 0;
                     this.combo = 0; // Reset combo on hit
+                    // Spawn shield break particles (blue)
+                    for (let i = 0; i < 10; i++) {
+                        this.particles.push(new Particle(this.player.x + this.player.size / 2, this.player.y + this.player.size / 2, 'rgba(0,200,255,0.7)'));
+                    }
                 } else {
                     // No shield - game over
+                    // Spawn explosion particles (red)
+                    for (let i = 0; i < 12; i++) {
+                        this.particles.push(new Particle(this.player.x + this.player.size / 2, this.player.y + this.player.size / 2, 'rgba(255,50,50,0.8)'));
+                    }
                     this.gameOver();
                 }
             }
@@ -386,6 +409,9 @@ export class Game {
         this.collectibleManager.draw(this.ctx);
         this.player.draw(this.ctx);
         this.obstacleManager.draw(this.ctx);
+
+        // Draw particles
+        this.particles.forEach(p => p.draw(this.ctx));
 
         // Draw shield indicator
         if (this.shield > 0) {
