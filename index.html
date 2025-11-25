@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gravity Runner</title>
+</head>
+
+<body>
+  <div id="app">
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui-layer">
+      <div id="score">Score: 0</div>
+      <div id="start-screen" class="screen">
+        <h1>GRAVITY RUNNER</h1>
+        <p>Click or Space to Flip Gravity</p>
+        <button id="start-btn" tabindex="-1">START GAME</button>
+      </div>
+      <div id="game-over-screen" class="screen hidden">
+        <h1>GAME OVER</h1>
+        <p id="final-score">Score: 0</p>
+        <p id="rank-message" class="rank-message"></p>
+        <div id="name-input-container" class="name-input-container">
+          <div class="name-input-row">
+            <input type="text" id="player-name" placeholder="Your name" maxlength="20" />
+            <button id="save-score-btn" tabindex="-1">SAVE</button>
+          </div>
+          <div class="name-hint">Max 20 characters</div>
+        </div>
+        <div id="leaderboard">
+          <div class="leaderboard-tabs">
+            <button class="tab-btn active" data-tab="local">MY BEST</button>
+            <button class="tab-btn" data-tab="global">GLOBAL TOP 20</button>
+          </div>
+          <div class="tab-content active" id="local-tab">
+            <ol id="leaderboard-list"></ol>
+          </div>
+          <div class="tab-content" id="global-tab">
+            <ol id="global-leaderboard-list"></ol>
+            <p id="firebase-status" class="firebase-status"></p>
+          </div>
+        </div>
+        <button id="restart-btn" tabindex="-1">TRY AGAIN</button>
+      </div>
+
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
