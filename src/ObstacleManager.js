@@ -37,6 +37,15 @@ export class ObstacleManager {
         // Speed starts at 5, max reasonable speed around 15-20?
         const difficulty = Math.min(1, (this.game.speed - 5) / 10);
 
+        // Check if score is above 30,000 for dual obstacles
+        const highScore = this.game.score >= 30000;
+
+        // 30% chance of dual obstacles when score > 30,000
+        if (highScore && Math.random() < 0.3) {
+            this.spawnDualObstacles();
+            return;
+        }
+
         const rand = Math.random();
 
         // Pattern selection based on difficulty
@@ -48,6 +57,27 @@ export class ObstacleManager {
             this.spawnDoubleFlip();
         } else {
             this.spawnBarrage();
+        }
+    }
+
+    spawnDualObstacles() {
+        // Spawn two obstacles on different levels (ceiling+middle, floor+middle, or ceiling+floor)
+        const pattern = Math.random();
+        const x = this.game.width;
+        const width = 40 + Math.random() * 30;
+
+        if (pattern < 0.33) {
+            // Ceiling + Middle
+            this.createObstacle(x, width, 0.1);  // Ceiling
+            this.createObstacle(x, width, 0.7);  // Middle
+        } else if (pattern < 0.66) {
+            // Floor + Middle
+            this.createObstacle(x, width, 0.4);  // Floor
+            this.createObstacle(x, width, 0.7);  // Middle
+        } else {
+            // Ceiling + Floor (hardest)
+            this.createObstacle(x, width, 0.1);  // Ceiling
+            this.createObstacle(x, width, 0.4);  // Floor
         }
     }
 

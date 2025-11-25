@@ -87,6 +87,11 @@ export class CollectibleManager {
     }
 
     createCollectible(x, y, size, type) {
+        // Check if this position overlaps with any obstacles
+        if (this.checkOverlapWithObstacles(x, y, size)) {
+            return; // Don't spawn if overlapping
+        }
+
         this.collectibles.push({
             x,
             y,
@@ -94,6 +99,22 @@ export class CollectibleManager {
             type,
             rotation: 0
         });
+    }
+
+    checkOverlapWithObstacles(x, y, size) {
+        // Check collision with all obstacles
+        const obstacles = this.game.obstacleManager.obstacles;
+        for (const obs of obstacles) {
+            if (
+                x < obs.x + obs.width &&
+                x + size > obs.x &&
+                y < obs.y + obs.height &&
+                y + size > obs.y
+            ) {
+                return true; // Overlapping
+            }
+        }
+        return false; // No overlap
     }
 
     checkCollection(player) {
