@@ -23,8 +23,8 @@ export class FirebaseLeaderboard {
                 // Max Base Score (Speed 20, Combo 100): ~11,000 pts/sec
                 // Max Coin Score (10 coins/sec): 2,000 pts/sec
                 // Total theoretical max: ~13,000 pts/sec
-                // Setting safe limit to 15,000 pts/sec with 20,000 buffer
-                const maxPossibleScore = Math.max(20000, gameDuration * 15000);
+                // Setting safe limit to 15,000 pts/sec with 5,000 buffer for short games
+                const maxPossibleScore = Math.max(5000, gameDuration * 15000);
                 const actualScore = Math.floor(score);
 
                 // Only save if score seems reasonable
