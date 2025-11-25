@@ -31,10 +31,20 @@ export class CollectibleManager {
     }
 
     spawn() {
-        const x = this.game.width;
-        const size = 30; // Increased from 20 to 30
+        const rand = Math.random();
 
-        // Random type: 80% coin, 20% shield
+        if (rand < 0.5) {
+            this.spawnSingle();
+        } else if (rand < 0.8) {
+            this.spawnLine();
+        } else {
+            this.spawnV();
+        }
+    }
+
+    spawnSingle() {
+        const x = this.game.width;
+        const size = 30;
         const type = Math.random() < 0.8 ? 'coin' : 'shield';
 
         // Random Y position in the middle area
@@ -42,6 +52,41 @@ export class CollectibleManager {
         const middleEnd = this.game.height * 0.7;
         const y = middleStart + Math.random() * (middleEnd - middleStart - size);
 
+        this.createCollectible(x, y, size, type);
+    }
+
+    spawnLine() {
+        const count = 3 + Math.floor(Math.random() * 3); // 3-5 coins
+        const x = this.game.width;
+        const size = 30;
+        const type = 'coin'; // Lines are usually coins
+
+        const middleStart = this.game.height * 0.3;
+        const middleEnd = this.game.height * 0.7;
+        const y = middleStart + Math.random() * (middleEnd - middleStart - size);
+
+        for (let i = 0; i < count; i++) {
+            this.createCollectible(x + i * (size + 10), y, size, type);
+        }
+    }
+
+    spawnV() {
+        const count = 5;
+        const x = this.game.width;
+        const size = 30;
+        const type = 'coin';
+
+        const middleY = this.game.height / 2;
+        const offset = 40;
+
+        for (let i = 0; i < count; i++) {
+            // V shape: 0, 1, 2, 1, 0 * offset
+            const yOffset = Math.abs(i - 2) * offset;
+            this.createCollectible(x + i * (size + 10), middleY - 100 + yOffset, size, type);
+        }
+    }
+
+    createCollectible(x, y, size, type) {
         this.collectibles.push({
             x,
             y,

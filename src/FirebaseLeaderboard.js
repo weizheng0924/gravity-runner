@@ -19,9 +19,12 @@ export class FirebaseLeaderboard {
         // Try to save to Firebase
         if (this.firebaseEnabled) {
             try {
-                // Calculate max possible score based on game duration
-                // Rough estimate: ~100 points per second at max combo
-                const maxPossibleScore = gameDuration * 150;
+                // Calculated limit based on game mechanics:
+                // Max Base Score (Speed 20, Combo 100): ~11,000 pts/sec
+                // Max Coin Score (10 coins/sec): 2,000 pts/sec
+                // Total theoretical max: ~13,000 pts/sec
+                // Setting safe limit to 15,000 pts/sec with 20,000 buffer
+                const maxPossibleScore = Math.max(20000, gameDuration * 15000);
                 const actualScore = Math.floor(score);
 
                 // Only save if score seems reasonable
@@ -34,7 +37,7 @@ export class FirebaseLeaderboard {
                         date: new Date().toLocaleDateString()
                     });
                 } else {
-                    console.warn('Score seems too high for game duration, not saving to Firebase');
+                    console.warn(`Score rejected: ${actualScore} > ${maxPossibleScore} (Duration: ${gameDuration}s)`);
                 }
             } catch (error) {
                 console.warn('Firebase write failed, using local only:', error);

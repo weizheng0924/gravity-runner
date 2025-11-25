@@ -9,8 +9,9 @@ export class Game {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.width = canvas.width = window.innerWidth;
-        this.height = canvas.height = window.innerHeight;
+
+        // Initialize dimensions
+        this.resize(false);
 
         this.player = new Player(this);
         this.obstacleManager = new ObstacleManager(this);
@@ -57,21 +58,43 @@ export class Game {
         this.bindEvents();
 
         // Handle resize
-        window.addEventListener('resize', () => {
-            this.width = this.canvas.width = window.innerWidth;
-            this.height = this.canvas.height = window.innerHeight;
-            this.player.onResize();
-        });
+        window.addEventListener('resize', () => this.resize(true));
 
         // Handle mobile orientation change specifically
         window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                this.width = this.canvas.width = window.innerWidth;
-                this.height = this.canvas.height = window.innerHeight;
-                this.player.onResize();
-            }, 100);
+            setTimeout(() => this.resize(true), 100);
         });
 
+        // End game if user leaves the window/tab
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && this.isRunning) {
+                this.gameOver();
+            }
+        });
+    }
+
+    resize(updatePlayer = false) {
+        const MAX_WIDTH = 3840;
+        const MAX_HEIGHT = 2160;
+
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Calculate scale to fit within max dimensions while maintaining aspect ratio
+        const scale = Math.min(
+            1,
+            MAX_WIDTH / windowWidth,
+            MAX_HEIGHT / windowHeight
+        );
+
+        // Set internal canvas resolution (clamped)
+        this.width = this.canvas.width = Math.floor(windowWidth * scale);
+        this.height = this.canvas.height = Math.floor(windowHeight * scale);
+
+        // Update player position if needed
+        if (updatePlayer && this.player) {
+            this.player.onResize();
+        }
     }
 
     bindEvents() {
