@@ -9,7 +9,7 @@ export class FirebaseLeaderboard {
         this.firebaseEnabled = true;
         this.cache = null;
         this.cacheTime = 0;
-        this.cacheDuration = 5 * 60 * 1000; // 5 minutes
+        this.cacheDuration = 1 * 60 * 1000; // 1 minute
     }
 
     async addScore(score, name = 'Anonymous', gameDuration = 0) {
